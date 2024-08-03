@@ -18,10 +18,18 @@ up_build:
 	docker-compose up --build -d
 	@echo "Docker containers started!"
 
-# installing swagger for api documentation
+# swagger: installing swagger for api documentation
 swagger:
 	go install github.com/swaggo/swag/cmd/swag@latest
 
-# initiating swagger docs
-swagger-init:
+# swagger_init: initiating swagger docs
+swagger_init:
 	swag init -g path/to/your/main.go
+
+# migrate_up: to run the migrations up command
+migrate_up:
+	migrate -path database/migrations -database "postgresql://root:password@localhost:5432/e-commerce?sslmode=disable" -verbose up
+
+# migrate_down: to run the migrations down command
+migrate_down:
+	migrate -path database/migrations -database "postgresql://root:password@localhost:5432/e-commerce?sslmode=disable" -verbose down
