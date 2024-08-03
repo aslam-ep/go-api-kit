@@ -17,3 +17,11 @@ up_build:
 	@echo "Building and starting docker containers..."
 	docker-compose up --build -d
 	@echo "Docker containers started!"
+
+# installing swagger for api documentation
+swagger:
+	go install github.com/swaggo/swag/cmd/swag@latest
+
+# initiating swagger docs
+swagger-init:
+	swag init -g path/to/your/main.go
