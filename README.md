@@ -25,18 +25,10 @@ Getting Started
 ### Installation
 
 1.  Clone the repository:
-    
-    bash
-    
-    Copy code
-    
+
     `git clone https://github.com/aslam-ep/go-api-kit.git cd go-api-kit`
     
 2.  Copy the `.env.example` file to `.env` and update the environment variables as needed.
-    
-    bash
-    
-    Copy code
     
     `cp .env.example .env`
     
@@ -49,19 +41,11 @@ Use the provided `Makefile` to manage the application lifecycle.
     
     To start the PostgreSQL and Adminer containers, use the `make up` command:
     
-    bash
-    
-    Copy code
-    
     `make up`
     
 2.  **Run Migrations**:
     
     To apply the database migrations, use the `migrate` command:
-    
-    bash
-    
-    Copy code
     
     `make migrate_up`
     
@@ -69,20 +53,12 @@ Use the provided `Makefile` to manage the application lifecycle.
     
     To stop the containers, use the `make down` command:
     
-    bash
-    
-    Copy code
-    
     `make down`
     
 
 ### API Documentation
 
 The API documentation is provided using Swagger. After starting the application, you can access the Swagger UI at:
-
-bash
-
-Copy code
 
 `http://localhost:8080/api/v1/swagger/`
 
@@ -105,4 +81,4 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 License
 -------
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/aslam-ep/go-api-kit/blob/main/LICENSE) file for details.
