@@ -26,7 +26,9 @@ Getting Started
 
 1.  Clone the repository:
 
-    `git clone https://github.com/aslam-ep/go-api-kit.git cd go-api-kit`
+    `git clone https://github.com/aslam-ep/go-api-kit.git`
+    
+    `cd go-api-kit`
     
 2.  Copy the `.env.example` file to `.env` and update the environment variables as needed.
     
