@@ -1,5 +1,34 @@
 definitions:
-  models.CreateUserReq:
+  auth.LoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.LoginRes:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  auth.RefreshTokenReq:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  auth.RefreshTokenRes:
+    properties:
+      access_token:
+        type: string
+    type: object
+  user.CreateUserReq:
     properties:
       email:
         type: string
@@ -24,14 +53,7 @@ definitions:
     - phone
     - role
     type: object
-  models.MessageRes:
-    properties:
-      message:
-        type: string
-      success:
-        type: boolean
-    type: object
-  models.ResetPasswordReq:
+  user.ResetPasswordReq:
     properties:
       current_password:
         minLength: 6
@@ -45,7 +67,7 @@ definitions:
     - current_password
     - new_password
     type: object
-  models.UpdateUserReq:
+  user.UpdateUserReq:
     properties:
       id:
         type: integer
@@ -66,7 +88,7 @@ definitions:
     - phone
     - role
     type: object
-  models.UserRes:
+  user.UserRes:
     properties:
       created_at:
         type: string
@@ -83,9 +105,76 @@ definitions:
       udapted_at:
         type: string
     type: object
+  utils.MessageRes:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
 info:
   contact: {}
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user, on success get the refreshToken and accessToken
+      parameters:
+      - description: Login request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login response
+          schema:
+            $ref: '#/definitions/auth.LoginRes'
+        "400":
+          description: Default response
+          schema:
+            $ref: '#/definitions/utils.MessageRes'
+        "401":
+          description: Default response
+          schema:
+            $ref: '#/definitions/utils.MessageRes'
+      summary: Login user
+      tags:
+      - auth
+  /auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Refresh token, send the new access token based on refresh token
+      parameters:
+      - description: Refresh token request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshTokenReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Refresh token response
+          schema:
+            $ref: '#/definitions/auth.RefreshTokenRes'
+        "400":
+          description: Default response
+          schema:
+            $ref: '#/definitions/utils.MessageRes'
+        "401":
+          description: Default response
+          schema:
+            $ref: '#/definitions/utils.MessageRes'
+      summary: Refresh token
+      tags:
+      - auth
   /users/{id}:
     post:
       consumes:
@@ -103,11 +192,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserRes'
+            $ref: '#/definitions/user.UserRes'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
       summary: Get User Details
       tags:
       - user
@@ -128,11 +217,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
       summary: Delete User Details
       tags:
       - user
@@ -152,18 +241,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.ResetPasswordReq'
+          $ref: '#/definitions/user.ResetPasswordReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
       summary: Reset User Password
       tags:
       - user
@@ -183,18 +272,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateUserReq'
+          $ref: '#/definitions/user.UpdateUserReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserRes'
+            $ref: '#/definitions/user.UserRes'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
       summary: Update User Details
       tags:
       - user
@@ -209,18 +298,18 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.CreateUserReq'
+          $ref: '#/definitions/user.CreateUserReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.UserRes'
+            $ref: '#/definitions/user.UserRes'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.MessageRes'
+            $ref: '#/definitions/utils.MessageRes'
       summary: Register a new user
       tags:
       - user

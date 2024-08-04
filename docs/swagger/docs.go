@@ -15,6 +15,98 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Login a user, on success get the refreshToken and accessToken",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Login request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login response",
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Default response",
+                        "schema": {
+                            "$ref": "#/definitions/utils.MessageRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Default response",
+                        "schema": {
+                            "$ref": "#/definitions/utils.MessageRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh-token": {
+            "post": {
+                "description": "Refresh token, send the new access token based on refresh token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh token",
+                "parameters": [
+                    {
+                        "description": "Refresh token request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RefreshTokenReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Refresh token response",
+                        "schema": {
+                            "$ref": "#/definitions/auth.RefreshTokenRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Default response",
+                        "schema": {
+                            "$ref": "#/definitions/utils.MessageRes"
+                        }
+                    },
+                    "401": {
+                        "description": "Default response",
+                        "schema": {
+                            "$ref": "#/definitions/utils.MessageRes"
+                        }
+                    }
+                }
+            }
+        },
         "/users/register": {
             "post": {
                 "description": "Register a new user with the provided details",
@@ -35,7 +127,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateUserReq"
+                            "$ref": "#/definitions/user.CreateUserReq"
                         }
                     }
                 ],
@@ -43,13 +135,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserRes"
+                            "$ref": "#/definitions/user.UserRes"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     }
                 }
@@ -81,13 +173,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserRes"
+                            "$ref": "#/definitions/user.UserRes"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     }
                 }
@@ -119,13 +211,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     }
                 }
@@ -158,7 +250,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ResetPasswordReq"
+                            "$ref": "#/definitions/user.ResetPasswordReq"
                         }
                     }
                 ],
@@ -166,13 +258,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     }
                 }
@@ -205,7 +297,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateUserReq"
+                            "$ref": "#/definitions/user.UpdateUserReq"
                         }
                     }
                 ],
@@ -213,13 +305,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.UserRes"
+                            "$ref": "#/definitions/user.UserRes"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageRes"
+                            "$ref": "#/definitions/utils.MessageRes"
                         }
                     }
                 }
@@ -227,7 +319,52 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.CreateUserReq": {
+        "auth.LoginReq": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.LoginRes": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.RefreshTokenReq": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.RefreshTokenRes": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.CreateUserReq": {
             "type": "object",
             "required": [
                 "email",
@@ -261,18 +398,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.MessageRes": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "models.ResetPasswordReq": {
+        "user.ResetPasswordReq": {
             "type": "object",
             "required": [
                 "current_password",
@@ -292,7 +418,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateUserReq": {
+        "user.UpdateUserReq": {
             "type": "object",
             "required": [
                 "id",
@@ -321,7 +447,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UserRes": {
+        "user.UserRes": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -344,6 +470,17 @@ const docTemplate = `{
                 },
                 "udapted_at": {
                     "type": "string"
+                }
+            }
+        },
+        "utils.MessageRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         }

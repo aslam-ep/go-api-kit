@@ -53,9 +53,10 @@ func (r *userRepository) Create(ctx context.Context, user *User) (*User, error) 
 
 func (r *userRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
 	var user User
-	selectQueryByEmail := `SELECT id, name, email, phone, password, created_at, updated_at role FROM users WHERE email = $1 AND is_deleted = false`
+	selectQueryByEmail := `SELECT id, name, email, phone, role, password, created_at, updated_at role FROM users WHERE email = $1 AND is_deleted = false`
 
 	err := r.db.QueryRowContext(ctx, selectQueryByEmail, email).Scan(
+		&user.ID,
 		&user.Name,
 		&user.Email,
 		&user.Phone,
@@ -74,9 +75,10 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*User, e
 
 func (r *userRepository) GetByID(ctx context.Context, id int) (*User, error) {
 	var user User
-	selectQueryByID := `SELECT id, name, email, phone, password, created_at, updated_at FROM users WHERE id = $1 AND is_deleted = false`
+	selectQueryByID := `SELECT id, name, email, phone, role, password, created_at, updated_at FROM users WHERE id = $1 AND is_deleted = false`
 
 	err := r.db.QueryRowContext(ctx, selectQueryByID, id).Scan(
+		&user.ID,
 		&user.Name,
 		&user.Email,
 		&user.Phone,

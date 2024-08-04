@@ -7,11 +7,12 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	_ "github.com/aslam-ep/go-e-commerce/docs/swagger"
+	"github.com/aslam-ep/go-e-commerce/internal/auth"
 	"github.com/aslam-ep/go-e-commerce/internal/user"
 	"github.com/aslam-ep/go-e-commerce/utils"
 )
 
-func SetupRoutes(r chi.Router, userHandler *user.UserHandler) {
+func SetupRoutes(r chi.Router, userHandler *user.UserHandler, authHandler *auth.AuthHandler) {
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 			utils.WriteResponse(w, http.StatusAccepted, &struct {
@@ -26,15 +27,17 @@ func SetupRoutes(r chi.Router, userHandler *user.UserHandler) {
 
 		// Auth Router group
 		r.Route("/auth", func(r chi.Router) {
+			r.Post("/login", authHandler.Login)
+			r.Post("/refresh-token", authHandler.RefreshToken)
 		})
 
 		// User Router group
 		r.Route("/users", func(r chi.Router) {
-			r.Post("/register", userHandler.CreateUser)
+			r.Post("/create", userHandler.CreateUser)
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", userHandler.GetUser)
 				r.Put("/update", userHandler.UpdateUser)
-				r.Put("/password-reset", userHandler.ResetPassword)
+				r.Put("/reset-password", userHandler.ResetPassword)
 				r.Delete("/delete", userHandler.DeleteUser)
 			})
 		})
