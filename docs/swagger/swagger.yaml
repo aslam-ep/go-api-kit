@@ -1,0 +1,227 @@
+definitions:
+  models.CreateUserReq:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+      role:
+        enum:
+        - user
+        - vendor
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - phone
+    - role
+    type: object
+  models.MessageRes:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.ResetPasswordReq:
+    properties:
+      current_password:
+        minLength: 6
+        type: string
+      id:
+        type: integer
+      new_password:
+        minLength: 6
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  models.UpdateUserReq:
+    properties:
+      id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone:
+        type: string
+      role:
+        enum:
+        - user
+        - vendor
+        type: string
+    required:
+    - id
+    - name
+    - phone
+    - role
+    type: object
+  models.UserRes:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      udapted_at:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /users/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Get User Details by provided ID in url
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+      summary: Get User Details
+      tags:
+      - user
+  /users/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete User Details by provided ID in url
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+      summary: Delete User Details
+      tags:
+      - user
+  /users/{id}/password-reset:
+    put:
+      consumes:
+      - application/json
+      description: Reset User Password by provided ID in url and password in body
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Password change request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ResetPasswordReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+      summary: Reset User Password
+      tags:
+      - user
+  /users/{id}/update:
+    put:
+      consumes:
+      - application/json
+      description: Update User Details by provided ID in url and details in body
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User Update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+      summary: Update User Details
+      tags:
+      - user
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided details
+      parameters:
+      - description: User registration request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.MessageRes'
+      summary: Register a new user
+      tags:
+      - user
+swagger: "2.0"

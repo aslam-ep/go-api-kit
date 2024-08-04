@@ -5,13 +5,14 @@ import (
 	"errors"
 	"io"
 	"net/http"
+
+	"github.com/aslam-ep/go-e-commerce/models"
 )
 
 // ReadFromRequest reads the JSON request body and dectode it into the provided interface
-func ReadFromRequest(w http.ResponseWriter, r *http.Request, requestBody any) error {
+func ReadFromRequest(r *http.Request, requestBody any) error {
 	if r.Header.Get("Content-Type") != "application/json" {
-		http.Error(w, "Content-Type header is not application/json", http.StatusUnsupportedMediaType)
-		return http.ErrNotSupported
+		return errors.New("content-type header is not application/json")
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -22,22 +23,31 @@ func ReadFromRequest(w http.ResponseWriter, r *http.Request, requestBody any) er
 
 		switch {
 		case errors.As(err, &syntaxError):
-			http.Error(w, "Request body contains badly formed JSON", http.StatusBadRequest)
+			return errors.New("request body contains badly formed JSON")
 		case errors.As(err, &unmarshalTypeError):
-			http.Error(w, "Request body contains an invalid value for a specifci field", http.StatusBadRequest)
+			return errors.New("request body contains an invalid value for a specifci field")
 		case errors.Is(err, io.EOF):
-			http.Error(w, "Request body must not be empty", http.StatusBadRequest)
+			return errors.New("request body must not be empty")
 		default:
-			http.Error(w, "Request body contains invalid JSON", http.StatusBadRequest)
+			return errors.New("request body contains invalid JSON")
 		}
-		return err
 	}
 
 	return nil
 }
 
+// WriterErrorResponse writes a Error JSOM response with the provided status code and error message
+func WriterErrorResponse(w http.ResponseWriter, status int, message string) {
+	res := &models.MessageRes{
+		Success: false,
+		Message: message,
+	}
+
+	WriteResponse(w, status, res)
+}
+
 // WriteToResponse writes a JSON response with the provided status code and data
-func WriteToResponse(w http.ResponseWriter, status int, responseBody any) {
+func WriteResponse(w http.ResponseWriter, status int, responseBody any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(responseBody); err != nil {

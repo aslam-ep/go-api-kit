@@ -6,7 +6,10 @@ import (
 
 	"github.com/aslam-ep/go-e-commerce/config"
 	"github.com/aslam-ep/go-e-commerce/database"
+	"github.com/aslam-ep/go-e-commerce/handlers"
+	"github.com/aslam-ep/go-e-commerce/repositories"
 	"github.com/aslam-ep/go-e-commerce/routes"
+	"github.com/aslam-ep/go-e-commerce/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -29,8 +32,13 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	// Initilize user domain
+	userRepo := repositories.NewUserRepository(db)
+	userServ := services.NewUserService(userRepo)
+	userHandler := handlers.NewUserHandler(userServ)
+
 	// Setup routes
-	routes.SetupRoutes(r)
+	routes.SetupRoutes(r, userHandler)
 
 	// Start the server
 	log.Println("Starting the server on :", config.AppConfig.ServerPort)
