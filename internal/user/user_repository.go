@@ -100,10 +100,11 @@ func (r *userRepository) Update(ctx context.Context, user *User) (*User, error) 
 	updateQuery := `UPDATE users SET name = $1, phone = $2, role = $3, updated_at = $4 WHERE id = $5`
 
 	_, err := r.db.ExecContext(ctx, updateQuery,
-		&user.Name,
-		&user.Phone,
-		&user.Role,
-		&user.UpdatedAt,
+		user.Name,
+		user.Phone,
+		user.Role,
+		user.UpdatedAt,
+		user.ID,
 	)
 
 	if err != nil {

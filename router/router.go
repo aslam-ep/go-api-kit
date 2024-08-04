@@ -9,6 +9,7 @@ import (
 	_ "github.com/aslam-ep/go-e-commerce/docs/swagger"
 	"github.com/aslam-ep/go-e-commerce/internal/auth"
 	"github.com/aslam-ep/go-e-commerce/internal/user"
+	"github.com/aslam-ep/go-e-commerce/router/middleware"
 	"github.com/aslam-ep/go-e-commerce/utils"
 )
 
@@ -34,7 +35,8 @@ func SetupRoutes(r chi.Router, userHandler *user.UserHandler, authHandler *auth.
 		// User Router group
 		r.Route("/users", func(r chi.Router) {
 			r.Post("/create", userHandler.CreateUser)
-			r.Route("/{id}", func(r chi.Router) {
+
+			r.With(middleware.AuthMiddleware, middleware.ProfileMiddleware).Route("/{id}", func(r chi.Router) {
 				r.Get("/", userHandler.GetUser)
 				r.Put("/update", userHandler.UpdateUser)
 				r.Put("/reset-password", userHandler.ResetPassword)

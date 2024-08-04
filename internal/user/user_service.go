@@ -74,6 +74,7 @@ func (s *userService) GetUserById(c context.Context, id int) (*UserRes, error) {
 	}
 
 	res := &UserRes{
+		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
 		Phone:     user.Phone,
@@ -108,6 +109,7 @@ func (s *userService) UpdateUser(c context.Context, req *UpdateUserReq) (*UserRe
 	}
 
 	res := &UserRes{
+		ID:        updatedUser.ID,
 		Name:      updatedUser.Name,
 		Email:     updatedUser.Email,
 		Phone:     updatedUser.Phone,
