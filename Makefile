@@ -24,7 +24,7 @@ swagger:
 
 # swagger_init: initiating swagger docs
 swagger_init:
-	swag init -g path/to/your/main.go
+	swag init -g ./cmd/main.go -o ./docs/swagger
 
 # migrate_up: to run the migrations up command
 migrate_up:

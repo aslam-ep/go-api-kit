@@ -15,6 +15,7 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	DBName     string
+	DBTimeout  int
 	JWTSecret  string
 }
 
@@ -34,6 +35,7 @@ func LoadConfig() {
 		DBUser:     getEnv("DB_USER", "root"),
 		DBPassword: getEnv("DB_PASSWORD", "password"),
 		DBName:     getEnv("DB_NAME", "e-commerce"),
+		DBTimeout:  getEnvAsInt("DB_TIMEOUT", 2),
 		JWTSecret:  getEnv("JWT_SECRET", "someSecretKey"),
 	}
 }
