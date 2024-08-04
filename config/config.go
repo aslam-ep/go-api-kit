@@ -9,14 +9,15 @@ import (
 )
 
 type Config struct {
-	ServerPort string
-	DBHost     string
-	DBPort     int
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBTimeout  int
-	JWTSecret  string
+	ServerPort   string
+	DBHost       string
+	DBPort       int
+	DBUser       string
+	DBPassword   string
+	DBName       string
+	DBTimeout    int
+	JWTSecret    string
+	APIRateLimit int
 }
 
 var AppConfig *Config
@@ -29,14 +30,15 @@ func LoadConfig() {
 	}
 
 	AppConfig = &Config{
-		ServerPort: getEnv("SERVER_PORT", "8080"),
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBPort:     getEnvAsInt("DB_PORT", 5432),
-		DBUser:     getEnv("DB_USER", "root"),
-		DBPassword: getEnv("DB_PASSWORD", "password"),
-		DBName:     getEnv("DB_NAME", "e-commerce"),
-		DBTimeout:  getEnvAsInt("DB_TIMEOUT", 2),
-		JWTSecret:  getEnv("JWT_SECRET", "someSecretKey"),
+		ServerPort:   getEnv("SERVER_PORT", "8080"),
+		DBHost:       getEnv("DB_HOST", "localhost"),
+		DBPort:       getEnvAsInt("DB_PORT", 5432),
+		DBUser:       getEnv("DB_USER", "root"),
+		DBPassword:   getEnv("DB_PASSWORD", "password"),
+		DBName:       getEnv("DB_NAME", "e-commerce"),
+		DBTimeout:    getEnvAsInt("DB_TIMEOUT", 2),
+		JWTSecret:    getEnv("JWT_SECRET", "someSecretKey"),
+		APIRateLimit: getEnvAsInt("API_RATE_LIMIT", 100),
 	}
 }
 

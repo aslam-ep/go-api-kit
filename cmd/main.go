@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/aslam-ep/go-e-commerce/config"
 	"github.com/aslam-ep/go-e-commerce/database"
@@ -11,6 +12,7 @@ import (
 	"github.com/aslam-ep/go-e-commerce/router"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 )
 
 func main() {
@@ -29,7 +31,7 @@ func main() {
 	// Initilize router
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	r.Use(httprate.LimitByIP(config.AppConfig.APIRateLimit, time.Minute))
 
 	// Initilize user domain
 	userRepo := user.NewUserRepository(db)
