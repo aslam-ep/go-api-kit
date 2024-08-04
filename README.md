@@ -69,11 +69,14 @@ Folder Structure
 
 *   **cmd**: Contains the main application entry point.
 *   **config**: Configuration management for environment variables.
+*   **database**: Database migration files.
+*   **docs**: API documentation files postman collection and swagger.
 *   **internal**: Business logic and domain-specific code.
     *   **user**: User-related functionality (handlers, services, repositories, domain models).
     *   **auth**: Authentication-related functionality.
     *   **middleware**: Middlewares for request handling.
-*   **database**: Database migration files.
+*   **router**: Contains router files.
+*   *   **middleware**: Middlewares for the restricting routes.
 *   **utils**: Utility functions and helpers.
 
 Contributing
