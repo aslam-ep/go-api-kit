@@ -1,9 +1,7 @@
-package models
+package user
 
 import (
 	"time"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type User struct {
@@ -46,28 +44,4 @@ type ResetPasswordReq struct {
 	ID              int64  `json:"id"`
 	CurrentPassword string `json:"current_password" validate:"required,min=6"`
 	NewPassword     string `json:"new_password" validate:"required,min=6"`
-}
-
-type LoginReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type LoginRes struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-type RefreshTokenReq struct {
-	RefreshTokenReq string `json:"refresh_token"`
-}
-
-type RefreshTokenRes struct {
-	AccessToken string `json:"access_token"`
-}
-
-var Validate *validator.Validate
-
-func init() {
-	Validate = validator.New()
 }

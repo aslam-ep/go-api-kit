@@ -5,8 +5,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-
-	"github.com/aslam-ep/go-e-commerce/models"
 )
 
 // ReadFromRequest reads the JSON request body and dectode it into the provided interface
@@ -38,7 +36,7 @@ func ReadFromRequest(r *http.Request, requestBody any) error {
 
 // WriterErrorResponse writes a Error JSOM response with the provided status code and error message
 func WriterErrorResponse(w http.ResponseWriter, status int, message string) {
-	res := &models.MessageRes{
+	res := &MessageRes{
 		Success: false,
 		Message: message,
 	}

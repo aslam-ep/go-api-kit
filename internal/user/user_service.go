@@ -1,4 +1,4 @@
-package services
+package user
 
 import (
 	"context"
@@ -6,32 +6,30 @@ import (
 	"time"
 
 	"github.com/aslam-ep/go-e-commerce/config"
-	"github.com/aslam-ep/go-e-commerce/models"
-	"github.com/aslam-ep/go-e-commerce/repositories"
 	"github.com/aslam-ep/go-e-commerce/utils"
 )
 
 type UserService interface {
-	CreateUser(c context.Context, req *models.CreateUserReq) (*models.UserRes, error)
-	UpdateUser(c context.Context, req *models.UpdateUserReq) (*models.UserRes, error)
-	GetUserById(c context.Context, id int) (*models.UserRes, error)
-	ResetUserPassword(c context.Context, req *models.ResetPasswordReq) (*models.MessageRes, error)
-	DeleteUser(c context.Context, id int) (*models.MessageRes, error)
+	CreateUser(c context.Context, req *CreateUserReq) (*UserRes, error)
+	UpdateUser(c context.Context, req *UpdateUserReq) (*UserRes, error)
+	GetUserById(c context.Context, id int) (*UserRes, error)
+	ResetUserPassword(c context.Context, req *ResetPasswordReq) (*utils.MessageRes, error)
+	DeleteUser(c context.Context, id int) (*utils.MessageRes, error)
 }
 
 type userService struct {
-	userRepo repositories.UserRepository
+	userRepo UserRepository
 	timeout  time.Duration
 }
 
-func NewUserService(ur repositories.UserRepository) UserService {
+func NewUserService(ur UserRepository) UserService {
 	return &userService{
 		userRepo: ur,
 		timeout:  time.Duration(config.AppConfig.DBTimeout) * time.Second,
 	}
 }
 
-func (s *userService) CreateUser(c context.Context, req *models.CreateUserReq) (*models.UserRes, error) {
+func (s *userService) CreateUser(c context.Context, req *CreateUserReq) (*UserRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -40,7 +38,7 @@ func (s *userService) CreateUser(c context.Context, req *models.CreateUserReq) (
 		return nil, err
 	}
 
-	u := &models.User{
+	u := &User{
 		Name:     req.Name,
 		Email:    req.Email,
 		Phone:    req.Phone,
@@ -53,7 +51,7 @@ func (s *userService) CreateUser(c context.Context, req *models.CreateUserReq) (
 		return nil, err
 	}
 
-	res := &models.UserRes{
+	res := &UserRes{
 		ID:        createdUser.ID,
 		Name:      createdUser.Name,
 		Email:     createdUser.Email,
@@ -66,7 +64,7 @@ func (s *userService) CreateUser(c context.Context, req *models.CreateUserReq) (
 	return res, nil
 }
 
-func (s *userService) GetUserById(c context.Context, id int) (*models.UserRes, error) {
+func (s *userService) GetUserById(c context.Context, id int) (*UserRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -75,7 +73,7 @@ func (s *userService) GetUserById(c context.Context, id int) (*models.UserRes, e
 		return nil, err
 	}
 
-	res := &models.UserRes{
+	res := &UserRes{
 		Name:      user.Name,
 		Email:     user.Email,
 		Phone:     user.Phone,
@@ -87,7 +85,7 @@ func (s *userService) GetUserById(c context.Context, id int) (*models.UserRes, e
 	return res, nil
 }
 
-func (s *userService) UpdateUser(c context.Context, req *models.UpdateUserReq) (*models.UserRes, error) {
+func (s *userService) UpdateUser(c context.Context, req *UpdateUserReq) (*UserRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -97,7 +95,7 @@ func (s *userService) UpdateUser(c context.Context, req *models.UpdateUserReq) (
 		return nil, err
 	}
 
-	u := &models.User{
+	u := &User{
 		ID:    req.ID,
 		Name:  req.Name,
 		Phone: req.Phone,
@@ -109,7 +107,7 @@ func (s *userService) UpdateUser(c context.Context, req *models.UpdateUserReq) (
 		return nil, err
 	}
 
-	res := &models.UserRes{
+	res := &UserRes{
 		Name:      updatedUser.Name,
 		Email:     updatedUser.Email,
 		Phone:     updatedUser.Phone,
@@ -121,7 +119,7 @@ func (s *userService) UpdateUser(c context.Context, req *models.UpdateUserReq) (
 	return res, nil
 }
 
-func (s *userService) ResetUserPassword(c context.Context, req *models.ResetPasswordReq) (*models.MessageRes, error) {
+func (s *userService) ResetUserPassword(c context.Context, req *ResetPasswordReq) (*utils.MessageRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -146,7 +144,7 @@ func (s *userService) ResetUserPassword(c context.Context, req *models.ResetPass
 		return nil, err
 	}
 
-	res := &models.MessageRes{
+	res := &utils.MessageRes{
 		Success: true,
 		Message: "Password updated,",
 	}
@@ -154,7 +152,7 @@ func (s *userService) ResetUserPassword(c context.Context, req *models.ResetPass
 	return res, nil
 }
 
-func (s *userService) DeleteUser(c context.Context, id int) (*models.MessageRes, error) {
+func (s *userService) DeleteUser(c context.Context, id int) (*utils.MessageRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -169,7 +167,7 @@ func (s *userService) DeleteUser(c context.Context, id int) (*models.MessageRes,
 		return nil, err
 	}
 
-	res := &models.MessageRes{
+	res := &utils.MessageRes{
 		Success: true,
 		Message: "User Deleted.",
 	}

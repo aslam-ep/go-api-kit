@@ -1,4 +1,4 @@
-package routes
+package router
 
 import (
 	"net/http"
@@ -7,11 +7,11 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	_ "github.com/aslam-ep/go-e-commerce/docs/swagger"
-	"github.com/aslam-ep/go-e-commerce/handlers"
+	"github.com/aslam-ep/go-e-commerce/internal/user"
 	"github.com/aslam-ep/go-e-commerce/utils"
 )
 
-func SetupRoutes(r chi.Router, userHandler *handlers.UserHandler) {
+func SetupRoutes(r chi.Router, userHandler *user.UserHandler) {
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 			utils.WriteResponse(w, http.StatusAccepted, &struct {

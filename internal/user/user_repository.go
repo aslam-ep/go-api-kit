@@ -1,20 +1,18 @@
-package repositories
+package user
 
 import (
 	"context"
 	"database/sql"
 	"time"
-
-	"github.com/aslam-ep/go-e-commerce/models"
 )
 
 type UserRepository interface {
-	Create(ctx context.Context, user *models.User) (*models.User, error)
-	GetByEmail(ctx context.Context, email string) (*models.User, error)
-	GetByID(ctx context.Context, id int) (*models.User, error)
-	Update(ctx context.Context, user *models.User) (*models.User, error)
-	ResetPassword(ctx context.Context, user *models.User, password string) error
-	Delete(ctx context.Context, user *models.User) error
+	Create(ctx context.Context, user *User) (*User, error)
+	GetByEmail(ctx context.Context, email string) (*User, error)
+	GetByID(ctx context.Context, id int) (*User, error)
+	Update(ctx context.Context, user *User) (*User, error)
+	ResetPassword(ctx context.Context, user *User, password string) error
+	Delete(ctx context.Context, user *User) error
 }
 
 type userRepository struct {
@@ -25,7 +23,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (r *userRepository) Create(ctx context.Context, user *models.User) (*models.User, error) {
+func (r *userRepository) Create(ctx context.Context, user *User) (*User, error) {
 	var userID int
 	var (
 		createdAt time.Time
@@ -53,8 +51,8 @@ func (r *userRepository) Create(ctx context.Context, user *models.User) (*models
 	return user, nil
 }
 
-func (r *userRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
-	var user models.User
+func (r *userRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
+	var user User
 	selectQueryByEmail := `SELECT id, name, email, phone, password, created_at, updated_at role FROM users WHERE email = $1 AND is_deleted = false`
 
 	err := r.db.QueryRowContext(ctx, selectQueryByEmail, email).Scan(
@@ -74,8 +72,8 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*models.
 	return &user, nil
 }
 
-func (r *userRepository) GetByID(ctx context.Context, id int) (*models.User, error) {
-	var user models.User
+func (r *userRepository) GetByID(ctx context.Context, id int) (*User, error) {
+	var user User
 	selectQueryByID := `SELECT id, name, email, phone, password, created_at, updated_at FROM users WHERE id = $1 AND is_deleted = false`
 
 	err := r.db.QueryRowContext(ctx, selectQueryByID, id).Scan(
@@ -95,7 +93,7 @@ func (r *userRepository) GetByID(ctx context.Context, id int) (*models.User, err
 	return &user, nil
 }
 
-func (r *userRepository) Update(ctx context.Context, user *models.User) (*models.User, error) {
+func (r *userRepository) Update(ctx context.Context, user *User) (*User, error) {
 	user.UpdatedAt = time.Now()
 	updateQuery := `UPDATE users SET name = $1, phone = $2, role = $3, updated_at = $4 WHERE id = $5`
 
@@ -113,7 +111,7 @@ func (r *userRepository) Update(ctx context.Context, user *models.User) (*models
 	return user, nil
 }
 
-func (r *userRepository) ResetPassword(ctx context.Context, user *models.User, password string) error {
+func (r *userRepository) ResetPassword(ctx context.Context, user *User, password string) error {
 	passwordUpdateQueryr := `UPDATE users SET passsword = $1 WHERE id = $2`
 
 	_, err := r.db.ExecContext(ctx, passwordUpdateQueryr, password, user.ID)
@@ -121,7 +119,7 @@ func (r *userRepository) ResetPassword(ctx context.Context, user *models.User, p
 	return err
 }
 
-func (r *userRepository) Delete(ctx context.Context, user *models.User) error {
+func (r *userRepository) Delete(ctx context.Context, user *User) error {
 	deleteQuery := `UPDATE users SET is_deleted = true WHERE id = $1`
 
 	_, err := r.db.ExecContext(ctx, deleteQuery, user.ID)
