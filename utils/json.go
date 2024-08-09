@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-// ReadFromRequest reads the JSON request body and dectode it into the provided interface
+// ReadFromRequest reads the JSON request body and decode it into the provided interface
 func ReadFromRequest(r *http.Request, requestBody any) error {
 	if r.Header.Get("Content-Type") != "application/json" {
 		return errors.New("content-type header is not application/json")
@@ -23,7 +23,7 @@ func ReadFromRequest(r *http.Request, requestBody any) error {
 		case errors.As(err, &syntaxError):
 			return errors.New("request body contains badly formed JSON")
 		case errors.As(err, &unmarshalTypeError):
-			return errors.New("request body contains an invalid value for a specifci field")
+			return errors.New("request body contains an invalid value for a specific field")
 		case errors.Is(err, io.EOF):
 			return errors.New("request body must not be empty")
 		default:
@@ -34,7 +34,7 @@ func ReadFromRequest(r *http.Request, requestBody any) error {
 	return nil
 }
 
-// WriterErrorResponse writes a Error JSOM response with the provided status code and error message
+// WriterErrorResponse writes a Error JSON response with the provided status code and error message
 func WriterErrorResponse(w http.ResponseWriter, status int, message string) {
 	res := &MessageRes{
 		Success: false,
@@ -44,7 +44,7 @@ func WriterErrorResponse(w http.ResponseWriter, status int, message string) {
 	WriteResponse(w, status, res)
 }
 
-// WriteToResponse writes a JSON response with the provided status code and data
+// WriteResponse writes a JSON response with the provided status code and data
 func WriteResponse(w http.ResponseWriter, status int, responseBody any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

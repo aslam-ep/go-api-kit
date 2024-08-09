@@ -11,14 +11,16 @@ import (
 
 type contextKey string
 
+// UserContextKey const to hold the custom type for user context value.
 const UserContextKey = contextKey("user")
 
+// AuthMiddleware middleware for checking the given token is valid one.
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Get the token from the authorization header
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			utils.WriterErrorResponse(w, http.StatusUnauthorized, "Authorizarion header is missing")
+			utils.WriterErrorResponse(w, http.StatusUnauthorized, "Authorization header is missing")
 			return
 		}
 

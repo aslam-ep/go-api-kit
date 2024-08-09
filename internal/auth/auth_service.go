@@ -10,20 +10,28 @@ import (
 	"github.com/aslam-ep/go-e-commerce/utils"
 )
 
-type AuthService interface {
+// Service interface defines the methods required for authentication services.
+type Service interface {
+	// RegisterUser Creates a new user based on the provided request and returns the created user's details.
+	RegisterUser(c context.Context, req *RegisterUserReq) (*user.User, error)
+
+	// Authenticate checks the provided login credentials and returns a login response.
 	Authenticate(ctx context.Context, req *LoginReq) (*LoginRes, error)
+
+	// RefreshToken verifies the provided refresh token and issues a new access token.
 	RefreshToken(ctx context.Context, req *RefreshTokenReq) (*RefreshTokenRes, error)
 }
 
-type authService struct {
-	userRepo user.UserRepository
-	authRepo AuthRepository
+type service struct {
+	userRepo user.Repository
+	authRepo Repository
 	timeout  time.Duration
 	secret   string
 }
 
-func NewAuthService(ur user.UserRepository, ar AuthRepository) AuthService {
-	return &authService{
+// NewService creates a new instance of the authentication service.
+func NewService(ur user.Repository, ar Repository) Service {
+	return &service{
 		userRepo: ur,
 		authRepo: ar,
 		timeout:  time.Duration(config.AppConfig.DBTimeout) * time.Second,
@@ -31,7 +39,42 @@ func NewAuthService(ur user.UserRepository, ar AuthRepository) AuthService {
 	}
 }
 
-func (s *authService) Authenticate(c context.Context, req *LoginReq) (*LoginRes, error) {
+func (s *service) RegisterUser(c context.Context, req *RegisterUserReq) (*user.User, error) {
+	ctx, cancel := context.WithTimeout(c, s.timeout)
+	defer cancel()
+
+	hashedPassword, err := utils.HashPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	u := &user.User{
+		Name:     req.Name,
+		Email:    req.Email,
+		Phone:    req.Phone,
+		Role:     req.Role,
+		Password: hashedPassword,
+	}
+
+	createdUser, err := s.userRepo.Create(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &user.User{
+		ID:        createdUser.ID,
+		Name:      createdUser.Name,
+		Email:     createdUser.Email,
+		Phone:     createdUser.Phone,
+		Role:      createdUser.Role,
+		CreatedAt: createdUser.CreatedAt,
+		UpdatedAt: createdUser.UpdatedAt,
+	}
+
+	return res, nil
+}
+
+func (s *service) Authenticate(c context.Context, req *LoginReq) (*LoginRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -68,7 +111,7 @@ func (s *authService) Authenticate(c context.Context, req *LoginReq) (*LoginRes,
 	return res, nil
 }
 
-func (s *authService) RefreshToken(c context.Context, req *RefreshTokenReq) (*RefreshTokenRes, error) {
+func (s *service) RefreshToken(c context.Context, req *RefreshTokenReq) (*RefreshTokenRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 

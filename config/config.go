@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Config struct to hold the server config values
 type Config struct {
 	ServerPort   string
 	DBHost       string
@@ -20,9 +21,10 @@ type Config struct {
 	APIRateLimit int
 }
 
+// AppConfig variable to hold the server config values
 var AppConfig *Config
 
-// LoadConfig loads enviorment variables and store them in AppConfig
+// LoadConfig loads environment variables and store them in AppConfig
 func LoadConfig() {
 	// Load .env file if present
 	if err := godotenv.Load(); err != nil {
@@ -43,14 +45,14 @@ func LoadConfig() {
 }
 
 // getEnv reads environment variable and return default value if not found
-func getEnv(key, defalutValue string) string {
+func getEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
 	}
-	return defalutValue
+	return defaultValue
 }
 
-// getEnvAsInt reads enviorement variable as integer and return default value if not found
+// getEnvAsInt reads environment variable as integer and return default value if not found
 func getEnvAsInt(key string, defaultValue int) int {
 	valueStr := getEnv(key, "")
 	if value, err := strconv.Atoi(valueStr); err == nil {

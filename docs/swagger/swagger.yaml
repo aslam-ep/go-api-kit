@@ -28,7 +28,7 @@ definitions:
       access_token:
         type: string
     type: object
-  user.CreateUserReq:
+  auth.RegisterUserReq:
     properties:
       email:
         type: string
@@ -88,7 +88,7 @@ definitions:
     - phone
     - role
     type: object
-  user.UserRes:
+  user.User:
     properties:
       created_at:
         type: string
@@ -98,11 +98,13 @@ definitions:
         type: integer
       name:
         type: string
+      password:
+        type: string
       phone:
         type: string
       role:
         type: string
-      udapted_at:
+      updated_at:
         type: string
     type: object
   utils.MessageRes:
@@ -175,7 +177,33 @@ paths:
       summary: Refresh token
       tags:
       - auth
-  /users/{id}:
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided details
+      parameters:
+      - description: User registration request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.MessageRes'
+      summary: Register a new user
+      tags:
+      - auth
+  /users/{user_id}:
     post:
       consumes:
       - application/json
@@ -192,7 +220,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.UserRes'
+            $ref: '#/definitions/user.User'
         "400":
           description: Bad Request
           schema:
@@ -200,7 +228,7 @@ paths:
       summary: Get User Details
       tags:
       - user
-  /users/{id}/delete:
+  /users/{user_id}/delete:
     delete:
       consumes:
       - application/json
@@ -225,7 +253,7 @@ paths:
       summary: Delete User Details
       tags:
       - user
-  /users/{id}/password-reset:
+  /users/{user_id}/password-reset:
     put:
       consumes:
       - application/json
@@ -256,7 +284,7 @@ paths:
       summary: Reset User Password
       tags:
       - user
-  /users/{id}/update:
+  /users/{user_id}/update:
     put:
       consumes:
       - application/json
@@ -279,38 +307,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.UserRes'
+            $ref: '#/definitions/user.User'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/utils.MessageRes'
       summary: Update User Details
-      tags:
-      - user
-  /users/register:
-    post:
-      consumes:
-      - application/json
-      description: Register a new user with the provided details
-      parameters:
-      - description: User registration request
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/user.CreateUserReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/user.UserRes'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.MessageRes'
-      summary: Register a new user
       tags:
       - user
 swagger: "2.0"
