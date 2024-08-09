@@ -6,24 +6,37 @@ import (
 	"time"
 )
 
-type UserRepository interface {
+// Repository interface for the user repository
+type Repository interface {
+	// Create stores a new user and returns the created user.
 	Create(ctx context.Context, user *User) (*User, error)
+
+	// GetByEmail find and returns the user by user email
 	GetByEmail(ctx context.Context, email string) (*User, error)
+
+	// GetByID find and returns the user, by user id
 	GetByID(ctx context.Context, id int) (*User, error)
+
+	// Update update user by user id and returns the updated user.
 	Update(ctx context.Context, user *User) (*User, error)
-	ResetPassword(ctx context.Context, user *User, password string) error
-	Delete(ctx context.Context, user *User) error
+
+	// ChangePassword update the user password by the user id
+	ChangePassword(ctx context.Context, userID int, password string) error
+
+	// Delete delete the given user based on user id
+	Delete(ctx context.Context, userID int) error
 }
 
-type userRepository struct {
+type repository struct {
 	db *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return &userRepository{db: db}
+// NewRepository initialize and return the Repository
+func NewRepository(db *sql.DB) Repository {
+	return &repository{db: db}
 }
 
-func (r *userRepository) Create(ctx context.Context, user *User) (*User, error) {
+func (r *repository) Create(ctx context.Context, user *User) (*User, error) {
 	var userID int
 	var (
 		createdAt time.Time
@@ -51,7 +64,7 @@ func (r *userRepository) Create(ctx context.Context, user *User) (*User, error) 
 	return user, nil
 }
 
-func (r *userRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
+func (r *repository) GetByEmail(ctx context.Context, email string) (*User, error) {
 	var user User
 	selectQueryByEmail := `SELECT id, name, email, phone, role, password, created_at, updated_at role FROM users WHERE email = $1 AND is_deleted = false`
 
@@ -73,7 +86,7 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*User, e
 	return &user, nil
 }
 
-func (r *userRepository) GetByID(ctx context.Context, id int) (*User, error) {
+func (r *repository) GetByID(ctx context.Context, id int) (*User, error) {
 	var user User
 	selectQueryByID := `SELECT id, name, email, phone, role, password, created_at, updated_at FROM users WHERE id = $1 AND is_deleted = false`
 
@@ -95,7 +108,7 @@ func (r *userRepository) GetByID(ctx context.Context, id int) (*User, error) {
 	return &user, nil
 }
 
-func (r *userRepository) Update(ctx context.Context, user *User) (*User, error) {
+func (r *repository) Update(ctx context.Context, user *User) (*User, error) {
 	user.UpdatedAt = time.Now()
 	updateQuery := `UPDATE users SET name = $1, phone = $2, role = $3, updated_at = $4 WHERE id = $5`
 
@@ -114,18 +127,18 @@ func (r *userRepository) Update(ctx context.Context, user *User) (*User, error) 
 	return user, nil
 }
 
-func (r *userRepository) ResetPassword(ctx context.Context, user *User, password string) error {
-	passwordUpdateQueryr := `UPDATE users SET passsword = $1 WHERE id = $2`
+func (r *repository) ChangePassword(ctx context.Context, userID int, password string) error {
+	passwordUpdateQuery := `UPDATE users SET password = $1 WHERE id = $2`
 
-	_, err := r.db.ExecContext(ctx, passwordUpdateQueryr, password, user.ID)
+	_, err := r.db.ExecContext(ctx, passwordUpdateQuery, password, userID)
 
 	return err
 }
 
-func (r *userRepository) Delete(ctx context.Context, user *User) error {
+func (r *repository) Delete(ctx context.Context, userID int) error {
 	deleteQuery := `UPDATE users SET is_deleted = true WHERE id = $1`
 
-	_, err := r.db.ExecContext(ctx, deleteQuery, user.ID)
+	_, err := r.db.ExecContext(ctx, deleteQuery, userID)
 
 	return err
 }

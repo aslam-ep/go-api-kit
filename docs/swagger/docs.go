@@ -107,7 +107,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/register": {
+        "/auth/register": {
             "post": {
                 "description": "Register a new user with the provided details",
                 "consumes": [
@@ -117,7 +117,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "auth"
                 ],
                 "summary": "Register a new user",
                 "parameters": [
@@ -127,7 +127,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateUserReq"
+                            "$ref": "#/definitions/auth.RegisterUserReq"
                         }
                     }
                 ],
@@ -135,7 +135,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.UserRes"
+                            "$ref": "#/definitions/user.User"
                         }
                     },
                     "400": {
@@ -147,7 +147,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/users/{user_id}": {
             "post": {
                 "description": "Get User Details by provided ID in url",
                 "consumes": [
@@ -173,7 +173,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.UserRes"
+                            "$ref": "#/definitions/user.User"
                         }
                     },
                     "400": {
@@ -185,7 +185,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/delete": {
+        "/users/{user_id}/delete": {
             "delete": {
                 "description": "Delete User Details by provided ID in url",
                 "consumes": [
@@ -223,7 +223,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/password-reset": {
+        "/users/{user_id}/password-reset": {
             "put": {
                 "description": "Reset User Password by provided ID in url and password in body",
                 "consumes": [
@@ -270,7 +270,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/update": {
+        "/users/{user_id}/update": {
             "put": {
                 "description": "Update User Details by provided ID in url and details in body",
                 "consumes": [
@@ -305,7 +305,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/user.UserRes"
+                            "$ref": "#/definitions/user.User"
                         }
                     },
                     "400": {
@@ -364,7 +364,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.CreateUserReq": {
+        "auth.RegisterUserReq": {
             "type": "object",
             "required": [
                 "email",
@@ -447,7 +447,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.UserRes": {
+        "user.User": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -462,13 +462,16 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "password": {
+                    "type": "string"
+                },
                 "phone": {
                     "type": "string"
                 },
                 "role": {
                     "type": "string"
                 },
-                "udapted_at": {
+                "updated_at": {
                     "type": "string"
                 }
             }

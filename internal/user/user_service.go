@@ -9,62 +9,35 @@ import (
 	"github.com/aslam-ep/go-e-commerce/utils"
 )
 
-type UserService interface {
-	CreateUser(c context.Context, req *CreateUserReq) (*UserRes, error)
-	UpdateUser(c context.Context, req *UpdateUserReq) (*UserRes, error)
-	GetUserById(c context.Context, id int) (*UserRes, error)
-	ResetUserPassword(c context.Context, req *ResetPasswordReq) (*utils.MessageRes, error)
+// Service interface for the user service
+type Service interface {
+	// UpdateUser Updates an existing user's information based on the provided request and returns the updated user's details.
+	UpdateUser(c context.Context, req *UpdateUserReq) (*User, error)
+
+	// GetUserById Retrieves a user's details by their ID.
+	GetUserByID(c context.Context, id int) (*User, error)
+
+	// ChangeUserPassword Resets the user's password based on the provided request and returns a message indicating success or failure.
+	ChangeUserPassword(c context.Context, req *ResetPasswordReq) (*utils.MessageRes, error)
+
+	// DeleteUser Deletes a user by their ID and returns a message indicating success or failure.
 	DeleteUser(c context.Context, id int) (*utils.MessageRes, error)
 }
 
-type userService struct {
-	userRepo UserRepository
+type service struct {
+	userRepo Repository
 	timeout  time.Duration
 }
 
-func NewUserService(ur UserRepository) UserService {
-	return &userService{
+// NewService initialize and return the Service
+func NewService(ur Repository) Service {
+	return &service{
 		userRepo: ur,
 		timeout:  time.Duration(config.AppConfig.DBTimeout) * time.Second,
 	}
 }
 
-func (s *userService) CreateUser(c context.Context, req *CreateUserReq) (*UserRes, error) {
-	ctx, cancel := context.WithTimeout(c, s.timeout)
-	defer cancel()
-
-	hashedPassword, err := utils.HashPassword(req.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	u := &User{
-		Name:     req.Name,
-		Email:    req.Email,
-		Phone:    req.Phone,
-		Role:     req.Role,
-		Password: hashedPassword,
-	}
-
-	createdUser, err := s.userRepo.Create(ctx, u)
-	if err != nil {
-		return nil, err
-	}
-
-	res := &UserRes{
-		ID:        createdUser.ID,
-		Name:      createdUser.Name,
-		Email:     createdUser.Email,
-		Phone:     createdUser.Phone,
-		Role:      createdUser.Role,
-		CreatedAt: createdUser.CreatedAt,
-		UpdatedAt: createdUser.UpdatedAt,
-	}
-
-	return res, nil
-}
-
-func (s *userService) GetUserById(c context.Context, id int) (*UserRes, error) {
+func (s *service) GetUserByID(c context.Context, id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -73,7 +46,7 @@ func (s *userService) GetUserById(c context.Context, id int) (*UserRes, error) {
 		return nil, err
 	}
 
-	res := &UserRes{
+	res := &User{
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
@@ -86,7 +59,7 @@ func (s *userService) GetUserById(c context.Context, id int) (*UserRes, error) {
 	return res, nil
 }
 
-func (s *userService) UpdateUser(c context.Context, req *UpdateUserReq) (*UserRes, error) {
+func (s *service) UpdateUser(c context.Context, req *UpdateUserReq) (*User, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -108,7 +81,7 @@ func (s *userService) UpdateUser(c context.Context, req *UpdateUserReq) (*UserRe
 		return nil, err
 	}
 
-	res := &UserRes{
+	res := &User{
 		ID:        updatedUser.ID,
 		Name:      updatedUser.Name,
 		Email:     updatedUser.Email,
@@ -121,7 +94,7 @@ func (s *userService) UpdateUser(c context.Context, req *UpdateUserReq) (*UserRe
 	return res, nil
 }
 
-func (s *userService) ResetUserPassword(c context.Context, req *ResetPasswordReq) (*utils.MessageRes, error) {
+func (s *service) ChangeUserPassword(c context.Context, req *ResetPasswordReq) (*utils.MessageRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -141,7 +114,7 @@ func (s *userService) ResetUserPassword(c context.Context, req *ResetPasswordReq
 		return nil, err
 	}
 
-	err = s.userRepo.ResetPassword(ctx, user, hashedPassword)
+	err = s.userRepo.ChangePassword(ctx, int(user.ID), hashedPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +127,7 @@ func (s *userService) ResetUserPassword(c context.Context, req *ResetPasswordReq
 	return res, nil
 }
 
-func (s *userService) DeleteUser(c context.Context, id int) (*utils.MessageRes, error) {
+func (s *service) DeleteUser(c context.Context, id int) (*utils.MessageRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
@@ -164,7 +137,7 @@ func (s *userService) DeleteUser(c context.Context, id int) (*utils.MessageRes, 
 		return nil, err
 	}
 
-	err = s.userRepo.Delete(ctx, user)
+	err = s.userRepo.Delete(ctx, int(user.ID))
 	if err != nil {
 		return nil, err
 	}

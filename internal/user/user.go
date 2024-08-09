@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// User represents the user entity in the system.
 type User struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
@@ -12,27 +13,10 @@ type User struct {
 	Role      string    `json:"role"`
 	Password  string    `json:"password,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"udapted_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
-type CreateUserReq struct {
-	Name     string `json:"name" validate:"required,min=3,max=100"`
-	Email    string `json:"email" validate:"required,email"`
-	Phone    string `json:"phone" validate:"required,e164"`
-	Role     string `json:"role" validate:"required,oneof=user vendor"`
-	Password string `json:"password" validate:"required,min=6"`
-}
-
-type UserRes struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Phone     string    `json:"phone"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"udapted_at"`
-}
-
+// UpdateUserReq represents the request payload for updating user details.
 type UpdateUserReq struct {
 	ID    int64  `json:"id" validate:"required"`
 	Name  string `json:"name" validate:"required,min=3,max=100"`
@@ -40,6 +24,7 @@ type UpdateUserReq struct {
 	Role  string `json:"role" validate:"required,oneof=user vendor"`
 }
 
+// ResetPasswordReq represents the request payload for resetting a user's password.
 type ResetPasswordReq struct {
 	ID              int64  `json:"id"`
 	CurrentPassword string `json:"current_password" validate:"required,min=6"`
