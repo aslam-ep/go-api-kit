@@ -10,6 +10,7 @@ import (
 
 // Config struct to hold the server config values
 type Config struct {
+	Domain       string
 	ServerPort   string
 	DBHost       string
 	DBPort       int
@@ -32,6 +33,7 @@ func LoadConfig() {
 	}
 
 	AppConfig = &Config{
+		Domain:       getEnv("DOMAIN", "localhost"),
 		ServerPort:   getEnv("SERVER_PORT", "8080"),
 		DBHost:       getEnv("DB_HOST", "localhost"),
 		DBPort:       getEnvAsInt("DB_PORT", 5432),

@@ -33,6 +33,7 @@ func NewRouter(db *sql.DB) *Router {
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.Logger)
 	r.Use(httprate.LimitByIP(config.AppConfig.APIRateLimit, time.Minute))
+	r.Use(middleware.CORS)
 
 	// Initialize user domain
 	userRepo := user.NewRepository(db)
